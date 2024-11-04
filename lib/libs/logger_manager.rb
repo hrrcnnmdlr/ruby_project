@@ -1,5 +1,3 @@
-# lib/my_application_name/logger_manager.rb
-
 require 'yaml'
 require 'logger'
 require 'fileutils'
@@ -11,30 +9,35 @@ module MyApplicationKFC
 
       def initialize_logger(config_file)
         config = load_config(config_file)
-
-        log_directory = config['directory']
-        log_level = config['level'] || 'INFO'
-        log_files = config['files'] || {}
-
-        # Перевірка наявності log_directory
+      
+        # Звернення до конфігураційних даних з урахуванням структури
+        log_directory = config.dig('logging', 'directory')
+        log_level = config.dig('logging', 'level') || 'INFO'
+        log_files = config.dig('logging', 'files') || {}
+      
+        # Перевірка наявності директорії
         if log_directory.nil? || log_directory.empty?
           puts "Помилка: Директорія для логів не вказана в конфігураційних даних."
           exit
         end
-
+      
         # Створення директорії для логів, якщо вона не існує
         FileUtils.mkdir_p(log_directory)
-
+      
         # Ініціалізація основного логера
         application_log_file = log_files['application_log'] || 'application.log'
         @logger = Logger.new(File.join(log_directory, application_log_file))
         @logger.level = Logger.const_get(log_level)
-
+      
         # Ініціалізація логера помилок
         error_log_file = log_files['error_log'] || 'error.log'
         @error_logger = Logger.new(File.join(log_directory, error_log_file))
         @error_logger.level = Logger::ERROR
+      
+        puts "Логування успішно налаштовано."
       end
+      
+      
 
       def load_config(file_path)
         config = YAML.load_file(file_path)
@@ -47,7 +50,6 @@ module MyApplicationKFC
         puts "Помилка в синтаксисі YAML: #{e.message}"
         exit
       end
-      
 
       def log_processed_file(message)
         @logger.info(message) if @logger

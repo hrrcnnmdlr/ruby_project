@@ -14,23 +14,33 @@ if defined?(AppConfigLoader)
   # Створення екземпляра класу AppConfigLoader
   config_loader = AppConfigLoader.new
 
-  # Виклик методу load_libs
+  # Виклик методу load_libs для автоматичного підключення бібліотек
   config_loader.load_libs
   puts "Бібліотеки успішно завантажено."
+
+  # Завантаження конфігурацій
+  config_data = config_loader.config
+  puts "Конфігураційні дані успішно завантажено."
+
+  # Перевірка завантаження конфігурацій
+  config_loader.pretty_print_config_data
 else
   puts "Клас AppConfigLoader не завантажено. Перевірте файл 'app_config_loader.rb' на наявність визначення класу."
+  exit
 end
 
-require_relative 'libs/logger_manager'
+# Налаштування логування
+begin
+  require_relative 'libs/logger_manager'
+  MyApplicationKFC::LoggerManager.initialize_logger('config/logging.yaml')
+rescue LoadError => e
+  puts "Не вдалося знайти файл 'logger_manager.rb'. Переконайтеся, що він існує в директорії lib."
+  puts "Деталі помилки: #{e.message}"
+  exit
+end
 
-# Ініціалізація логера з конфігураційним файлом
-MyApplicationKFC::LoggerManager.initialize_logger('config/application.yml')
-
-# Запис інформаційного повідомлення
+# Перевірка логування
 MyApplicationKFC::LoggerManager.log_processed_file('Файл успішно оброблено.')
-
-# Запис повідомлення про помилку
 MyApplicationKFC::LoggerManager.log_error('Виникла помилка під час обробки файлу.')
 
-# lib/main.rb
-
+puts "Логування налаштовано. Події було записано у лог."

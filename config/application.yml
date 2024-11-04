@@ -1,6 +1,6 @@
-# config/application.yml
-directory: 'logs'  # Директорія для зберігання логів
-level: 'INFO'      # Рівень логування
-files:             # Файли для логів
-  application_log: 'application.log'
-  error_log: 'error.log'
+logging:
+  directory: logs
+  level: INFO
+  files:
+    application_log: application.log
+    error_log: error.log
