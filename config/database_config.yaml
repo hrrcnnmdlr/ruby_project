@@ -1,0 +1,15 @@
+database_config:
+  # Тип бази даних, що використовується в проекті
+  database_type: sqlite    # або 'mongodb'
+
+  sqlite_database:
+    # Шлях до файлу бази даних SQLite
+    db_file: db/local_database.sqlite
+    # Додаткові параметри (за потреби)
+    timeout: 5000  # Час очікування на підключення в мілісекундах
+    pool_size: 5   # Розмір пулу з'єднань
+
+mongodb_database:
+    # URL для підключення до MongoDB
+    uri: mongodb://localhost:27017
+    db_name: my_database  # Назва бази даних MongoDB

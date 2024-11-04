@@ -1,0 +1,15 @@
+web_scraping:
+  # URL початкової сторінки для збору даних
+  start_page: https://life.com.ua
+  
+  # CSS селектор для отримання назв продуктів
+  product_name_selector: ".product-title"
+  
+  # CSS селектор для отримання цін продуктів
+  product_price_selector: ".product-price__item"
+  
+  # CSS селектор для отримання опису продуктів
+  product_description_selector: ".product-description"
+  
+  # CSS селектор для отримання зображень продуктів
+  product_image_selector: ".gallery__link"
