@@ -8,3 +8,4 @@ gem 'rubocop', require: false
 gem 'nokogiri'
 gem 'httparty'
 gem 'watir'
+gem 'faker', '~> 3.5'

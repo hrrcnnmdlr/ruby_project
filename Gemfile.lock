@@ -4,11 +4,16 @@ GEM
     ast (2.4.2)
     base64 (0.2.0)
     bigdecimal (3.1.8)
+    concurrent-ruby (1.3.4)
     csv (3.3.0)
+    faker (3.5.1)
+      i18n (>= 1.8.11, < 2)
     httparty (0.22.0)
       csv
       mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
+    i18n (1.14.6)
+      concurrent-ruby (~> 1.0)
     json (2.7.2)
     language_server-protocol (3.17.0.3)
     logger (1.6.1)
@@ -55,6 +60,7 @@ PLATFORMS
   x64-mingw-ucrt
 
 DEPENDENCIES
+  faker (~> 3.5)
   httparty
   nokogiri
   rubocop

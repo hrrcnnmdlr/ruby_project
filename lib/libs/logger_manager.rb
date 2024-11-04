@@ -1,6 +1,10 @@
 require 'yaml'
 require 'logger'
 require 'fileutils'
+require 'faker'
+
+# Set Faker's locale to English
+Faker::Config.locale = 'en'
 
 module MyApplicationKFC
   class LoggerManager
@@ -58,6 +62,71 @@ module MyApplicationKFC
       def log_error(message)
         @error_logger.error(message) if @error_logger
       end
+    end
+  end
+
+
+
+  class Item
+    attr_accessor :title, :year, :description, :imdb_rating, :image_path, :popularity, :genres, :director, :stars, :duration
+
+    def initialize(attributes = {}, &block)
+      @title = attributes[:title] || "Default Title"
+      @year = attributes[:year] || 2000
+      @description = attributes[:description] || "Default Description"
+      @imdb_rating = attributes[:imdb_rating] || 0.0
+      @image_path = attributes[:image_path] || "default_image_path.jpg"
+      @popularity = attributes[:popularity] || 0
+      @genres = attributes[:genres] || []
+      @director = attributes[:director] || "Unknown Director"
+      @stars = attributes[:stars] || []
+      @duration = attributes[:duration] || "N/A"
+
+      LoggerManager.log_processed_file("Initialized Item: #{@title}")
+
+      yield self if block_given?
+    end
+
+    def to_s
+      attributes = instance_variables.map { |var| "#{var.to_s.delete('@')}: #{instance_variable_get(var)}" }
+      attributes.join(", ")
+    end
+
+    def to_h
+      instance_variables.each_with_object({}) do |var, hash|
+        hash[var.to_s.delete('@')] = instance_variable_get(var)
+      end
+    end
+
+    def inspect
+      to_s
+    end
+
+    def update(&block)
+      yield self if block_given?
+    end
+
+    alias_method :info, :to_s
+
+    def self.generate_fake
+      new(
+        title: Faker::Movie.title,
+        year: Faker::Number.between(from: 1900, to: 2024),
+        description: Faker::Movie.quote,
+        imdb_rating: Faker::Number.decimal(l_digits: 1, r_digits: 1),
+        image_path: Faker::LoremPixel.image(size: "300x300", is_gray: false),
+        popularity: Faker::Number.between(from: 1, to: 100),
+        genres: [Faker::Book.genre, Faker::Book.genre],
+        director: Faker::Name.name,
+        stars: [Faker::Name.name, Faker::Name.name],
+        duration: "#{Faker::Number.between(from: 60, to: 180)} minutes"
+      )
+    end
+
+    include Comparable
+
+    def <=>(other)
+      @popularity <=> other.popularity
     end
   end
 end
