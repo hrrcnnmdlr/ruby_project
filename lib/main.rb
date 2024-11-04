@@ -1,17 +1,22 @@
-require_relative 'app_config_loader'
+# main.rb
 
-config_loader = AppConfigLoader.new
-
-# Вказуємо абсолютний шлях до основного конфігураційного файлу
-default_config_path = File.join(__dir__, '..', 'config', 'default_config.yaml') 
-# Вказуємо абсолютний шлях до директорії з YAML файлами
-config_directory = File.join(__dir__, '..', 'config') 
-
-# Виконуємо завантаження конфігураційних даних
-config_loader.config(default_config_path, config_directory) do |config_data|
-  # Використовуємо завантажені дані
-  puts "Завантажені конфігураційні дані: #{config_data}"
+# Перевірка наявності файлу з класом AppConfigLoader
+begin
+  require_relative 'app_config_loader'
+rescue LoadError => e
+  puts "Не вдалося знайти файл 'app_config_loader.rb'. Переконайтеся, що він існує в директорії lib."
+  puts "Деталі помилки: #{e.message}"
+  exit
 end
 
-# Виводимо конфігураційні дані у форматі JSON
-config_loader.pretty_print_config_data
+# Перевірка, чи клас AppConfigLoader успішно завантажено
+if defined?(AppConfigLoader)
+  # Створення екземпляра класу AppConfigLoader
+  config_loader = AppConfigLoader.new
+
+  # Виклик методу load_libs
+  config_loader.load_libs
+  puts "Бібліотеки успішно завантажено."
+else
+  puts "Клас AppConfigLoader не завантажено. Перевірте файл 'app_config_loader.rb' на наявність визначення класу."
+end
