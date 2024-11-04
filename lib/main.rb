@@ -20,3 +20,17 @@ if defined?(AppConfigLoader)
 else
   puts "Клас AppConfigLoader не завантажено. Перевірте файл 'app_config_loader.rb' на наявність визначення класу."
 end
+
+require_relative 'libs/logger_manager'
+
+# Ініціалізація логера з конфігураційним файлом
+MyApplicationKFC::LoggerManager.initialize_logger('config/application.yml')
+
+# Запис інформаційного повідомлення
+MyApplicationKFC::LoggerManager.log_processed_file('Файл успішно оброблено.')
+
+# Запис повідомлення про помилку
+MyApplicationKFC::LoggerManager.log_error('Виникла помилка під час обробки файлу.')
+
+# lib/main.rb
+

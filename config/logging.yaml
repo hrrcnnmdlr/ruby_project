@@ -2,9 +2,9 @@ logging:
   # Місце розміщення папки для логів
   directory: "logs"
   # Рівень логування (DEBUG, INFO, WARN, ERROR)
-  level: "DEBUG"   
+  level: "INFO"   
   files:
     # Назва файлу для логів додатку
-    application_log: "app.log"     
+    application_log: "application.log"     
     # Назва файлу для логів помилок
     error_log: "error.log" 
