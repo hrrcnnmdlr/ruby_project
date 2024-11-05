@@ -177,4 +177,33 @@ module MyApplicationKFC
       LoggerManager.log_processed_file("Items saved to YAML files in directory: output/items_yml")
     end
   end
+
+  class Configurator
+    attr_reader :config
+  
+    def initialize
+      @config = {
+        run_website_parser: 0,     # Запуск розбору сайту
+        run_save_to_csv: 0,        # Збереження даних в CSV форматі
+        run_save_to_json: 0,       # Збереження даних в JSON форматі
+        run_save_to_yaml: 0,       # Збереження даних в YAML форматі
+        run_save_to_sqlite: 0,     # Збереження даних в базі даних SQLite
+        run_save_to_mongodb: 0      # Збереження даних в базі даних MongoDB
+      }
+    end
+  
+    def configure(overrides)
+      overrides.each do |key, value|
+        if @config.key?(key)
+          @config[key] = value
+        else
+          puts "Попередження: #{key} не є дійсним параметром конфігурації."
+        end
+      end
+    end
+  
+    def self.available_methods
+      new.config.keys
+    end
+  end  
 end
