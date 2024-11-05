@@ -60,7 +60,8 @@ PLATFORMS
   x64-mingw-ucrt
 
 DEPENDENCIES
-  faker (~> 3.5)
+  csv
+  faker
   httparty
   i18n
   nokogiri

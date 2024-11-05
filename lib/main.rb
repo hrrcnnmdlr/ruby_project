@@ -81,3 +81,11 @@ if item1 > item2
 else
   puts "\nItem 2 is more popular than Item 1."
 end
+
+
+cart = MyApplicationKFC::Cart.new
+cart.generate_test_items(10)
+cart.save_to_file
+cart.save_to_json
+cart.save_to_csv
+cart.save_to_yml

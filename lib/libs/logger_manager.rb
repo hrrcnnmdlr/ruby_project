@@ -2,6 +2,8 @@ require 'yaml'
 require 'logger'
 require 'fileutils'
 require 'faker'
+require 'csv'
+require_relative 'item_container'
 
 # Set Faker's locale to English
 Faker::Config.locale = 'en'
@@ -127,6 +129,52 @@ module MyApplicationKFC
 
     def <=>(other)
       @popularity <=> other.popularity
+    end
+  end
+
+  class Cart
+    include ItemContainer
+    include Enumerable
+
+    attr_accessor :items
+
+    def initialize
+      @items = []
+      LoggerManager.log_processed_file("Cart initialized")
+      Dir.mkdir('output') unless Dir.exist?('output') # Створення папки output, якщо вона не існує
+    end
+
+    def each(&block)
+      @items.each(&block)
+    end
+
+    # Збереження інформації у файли
+    def save_to_file(filename = 'output/items.txt')
+      File.open(filename, 'w') do |file|
+        @items.each { |item| file.puts item.to_s }
+      end
+      LoggerManager.log_processed_file("Items saved to text file: #{filename}")
+    end
+
+    def save_to_json(filename = 'output/items.json')
+      File.write(filename, @items.to_json)
+      LoggerManager.log_processed_file("Items saved to JSON file: #{filename}")
+    end
+
+    def save_to_csv(filename = 'output/items.csv')
+      CSV.open(filename, 'w') do |csv|
+        csv << @items.first.keys if @items.any?
+        @items.each { |item| csv << item.values }
+      end
+      LoggerManager.log_processed_file("Items saved to CSV file: #{filename}")
+    end
+
+    def save_to_yml
+      Dir.mkdir('output/items_yml') unless Dir.exist?('output/items_yml') # Створення папки для YAML
+      @items.each_with_index do |item, index|
+        File.write("output/items_yml/item_#{index + 1}.yml", item.to_yaml)
+      end
+      LoggerManager.log_processed_file("Items saved to YAML files in directory: output/items_yml")
     end
   end
 end
