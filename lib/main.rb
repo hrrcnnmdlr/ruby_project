@@ -14,11 +14,6 @@ require 'faker'
 
 I18n.config.enforce_available_locales = false
 
-# Now generate a random movie title
-random_movie_title = Faker::Movie.title # or whatever method you are using
-
-puts "Random Movie Title: #{random_movie_title}"
-
 # Перевірка, чи клас AppConfigLoader успішно завантажено
 if defined?(AppConfigLoader)
   config_loader = AppConfigLoader.new

@@ -62,6 +62,7 @@ PLATFORMS
 DEPENDENCIES
   faker (~> 3.5)
   httparty
+  i18n
   nokogiri
   rubocop
   watir
