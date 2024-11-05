@@ -114,7 +114,7 @@ module MyApplicationKFC
         year: Faker::Number.between(from: 1900, to: 2024),
         description: Faker::Movie.quote,
         imdb_rating: Faker::Number.decimal(l_digits: 1, r_digits: 1),
-        image_path: Faker::LoremPixel.image(size: "300x300", is_gray: false),
+        image_path: "/path/to/image.jpg", # Вкажи шлях до конкретного фото
         popularity: Faker::Number.between(from: 1, to: 100),
         genres: [Faker::Book.genre, Faker::Book.genre],
         director: Faker::Name.name,
