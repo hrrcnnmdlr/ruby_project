@@ -1,0 +1,23 @@
+site:
+  start_url: "https://quotes.toscrape.com"
+  base_url: "https://quotes.toscrape.com"
+  product_link_selector: ".quote a"  # CSS-селектор для посилань на окремі цитати
+  name_selector: ".text"  # CSS-селектор для назви цитати
+  description_selector: ".author"  # CSS-селектор для автора цитати
+  image_selector: ".image img"  # CSS-селектор для зображень (якщо є)
+  category_selector: ".tag"  # CSS-селектор для тегів/категорій цитати
+
+logging:
+  directory: "logs"  # Директорія для збереження логів
+  level: "INFO"  # Рівень логування (INFO, DEBUG, ERROR, тощо)
+  files:
+    application_log: "application.log"  # Файл для основного логу
+    error_log: "error.log"  # Файл для логів помилок
+
+media:
+  media_dir: "media_dir"  # Директорія для збереження зображень продуктів
+  save_images: true  # Чи зберігати зображення (якщо є)
+
+threads:
+  max_concurrent_threads: 10  # Максимальна кількість потоків для парсингу сторінок
+

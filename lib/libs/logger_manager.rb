@@ -4,6 +4,8 @@ require 'fileutils'
 require 'faker'
 require 'csv'
 require_relative 'item_container'
+require 'mechanize'
+require_relative 'logger_manager'
 
 # Set Faker's locale to English
 Faker::Config.locale = 'en'
@@ -205,5 +207,118 @@ module MyApplicationKFC
     def self.available_methods
       new.config.keys
     end
-  end  
+  end
+  
+  class SimpleWebsiteParser
+    attr_accessor :config, :agent, :item_collection
+  
+    def initialize(config_file)
+      load_config(config_file)
+      @agent = Mechanize.new
+      @item_collection = []
+      LoggerManager.initialize_logger(config_file)
+    end
+  
+    def start_parse
+      LoggerManager.log_processed_file("Starting to parse website...")
+  
+      if check_url_response(config['site']['base_url'])
+        page = @agent.get(config['site']['base_url'])
+        product_links = extract_products_links(page)
+        product_links.each do |product_link|
+          parse_product_page(product_link)
+        end
+      else
+        LoggerManager.log_error("Base URL is not accessible: #{config['site']['base_url']}")
+      end
+    end
+  
+    def load_config(config_file)
+      @config = YAML.load_file(config_file)
+    rescue StandardError => e
+      LoggerManager.log_error("Failed to load config: #{e.message}")
+      exit
+    end
+  
+    def extract_products_links(page)
+      links = []
+      page.search(config['site']['product_link_selector']).each do |element|
+        links << element.attr('href')
+      end
+      links
+    end
+  
+    def parse_product_page(product_link)
+      LoggerManager.log_processed_file("Parsing product page: #{product_link}")
+  
+      # Якщо посилання відносне, додаємо до нього базову URL-адресу
+      if product_link.start_with?('/')
+        product_link = config['site']['base_url'] + product_link
+      end
+  
+      if check_url_response(product_link)
+        page = @agent.get(product_link)
+        item = extract_product_data(page)
+        item_collection << item
+      else
+        LoggerManager.log_error("Product URL is not accessible: #{product_link}")
+      end
+    end
+  
+    def extract_product_data(page)
+      name = extract_product_name(page)
+      description = extract_product_description(page)
+      image_url = extract_product_image(page)
+  
+      # Створення об'єкта Item
+      item = Item.new(
+        title: name,
+        description: description,
+        image_path: download_image(image_url)
+      )
+  
+      item
+    end
+  
+    def extract_product_name(page)
+      page.search(config['site']['name_selector']).text.strip
+    end
+  
+    def extract_product_description(page)
+      page.search(config['site']['description_selector']).text.strip
+    end
+  
+    def extract_product_image(page)
+      image_url = page.search(config['site']['image_selector']).attr('src')&.value
+      image_url
+    end
+  
+    def check_url_response(url)
+      agent = Mechanize.new
+      begin
+        page = agent.get(url)
+        page.code == '200' # Перевіряємо, що відповідь успішна
+      rescue Mechanize::ResponseCodeError => e
+        LoggerManager.log_error("Error fetching URL #{url}: #{e.message}")
+        false
+      rescue StandardError => e
+        LoggerManager.log_error("Error fetching URL #{url}: #{e.message}")
+        false
+      end
+    end
+  
+    def download_image(image_url)
+      return nil if image_url.nil?
+  
+      image_name = image_url.split('/').last
+      image_path = "media/#{image_name}"
+      FileUtils.mkdir_p("media") unless Dir.exist?("media")
+      File.open(image_path, 'wb') do |file|
+        file.write open(image_url).read
+      end
+      LoggerManager.log_processed_file("Downloaded image: #{image_path}")
+      image_path
+    end
+  end
+ 
 end
