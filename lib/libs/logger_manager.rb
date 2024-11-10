@@ -7,6 +7,7 @@ require_relative 'item_container'
 require 'mechanize'
 require_relative 'logger_manager'
 
+
 # Set Faker's locale to English
 Faker::Config.locale = 'en'
 
@@ -320,5 +321,76 @@ module MyApplicationKFC
       image_path
     end
   end
- 
+  require 'sqlite3'
+  require 'mongo'
+  require 'yaml'
+  
+  class DatabaseConnector
+    attr_reader :sqlite_db, :mongodb_db
+  
+    def initialize(config)
+      @config = config
+      @sqlite_db = nil
+      @mongodb_db = nil
+      connect_to_databases
+    end
+  
+    def connect_to_databases
+      connect_to_sqlite
+      connect_to_mongodb
+    end
+  
+    def close_connections
+      close_sqlite_connection
+      close_mongodb_connection
+    end
+  
+    private
+  
+    def connect_to_sqlite
+      sqlite_config = @config.dig('database_config', 'sqlite_database')
+      if sqlite_config
+        db_file = sqlite_config['db_file']
+        begin
+          @sqlite_db = SQLite3::Database.new(db_file)
+          puts "Connected to SQLite database at #{db_file}."
+        rescue SQLite3::Exception => e
+          puts "Failed to connect to SQLite database: #{e.message}"
+        end
+      else
+        puts "SQLite configuration is missing."
+      end
+    end
+  
+    def connect_to_mongodb
+      mongodb_config = @config.dig('database_config', 'mongodb_database')
+      if mongodb_config
+        uri = mongodb_config['uri']
+        db_name = mongodb_config['db_name']
+        begin
+          client = Mongo::Client.new(uri)
+          @mongodb_db = client.use(db_name)
+          puts "Connected to MongoDB database at #{uri}."
+        rescue Mongo::Error => e
+          puts "Failed to connect to MongoDB database: #{e.message}"
+        end
+      else
+        puts "MongoDB configuration is missing."
+      end
+    end
+  
+    def close_sqlite_connection
+      if @sqlite_db
+        @sqlite_db.close
+        puts "SQLite connection closed."
+      end
+    end
+  
+    def close_mongodb_connection
+      if @mongodb_db
+        @mongodb_db.close
+        puts "MongoDB connection closed."
+      end
+    end
+  end
 end

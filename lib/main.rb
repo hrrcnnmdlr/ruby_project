@@ -90,15 +90,14 @@ cart.save_to_json
 cart.save_to_csv
 cart.save_to_yml
 
-# Створення екземпляра класу Configurator
 configurator = MyApplicationKFC::Configurator.new
 
 # Налаштування конфігураційних параметрів
 configurator.configure(
-  run_website_parser: 1,      # Включити розбір сайту
-  run_save_to_csv: 1,         # Включити збереження даних в CSV
-  run_save_to_yaml: 1,        # Включити збереження даних в YAML
-  run_save_to_sqlite: 1       # Включити збереження даних в базі даних SQLite
+  run_website_parser: 1,      
+  run_save_to_csv: 1,         
+  run_save_to_yaml: 1,        
+  run_save_to_sqlite: 1       
 )
 
 # Виведення поточних конфігурацій
@@ -106,3 +105,12 @@ puts configurator.config.inspect
 
 # Отримання доступних методів
 puts MyApplicationKFC::Configurator.available_methods.inspect
+
+#  part 3.5 database connection
+config = YAML.load_file('config/database_config.yaml')
+
+sqlite_connector = MyApplicationKFC::DatabaseConnector.new(config)
+sqlite_connector.close_connections
+
+mongodb_connector = MyApplicationKFC::DatabaseConnector.new(config)
+mongodb_connector.close_connections
